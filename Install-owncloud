@@ -1,0 +1,117 @@
+網絡上有很多版本的如何安裝私人雲服務器owncloud-server 的文章，今天看來存在很多問題或者邏輯不清楚，我給大家整理了一份更準確的安裝步驟，接下來請看我的文章。
+
+
+
+一、升級ubantu系統，使用以下命令
+
+$ sudo apt update -y && sudo apt upgrade -y
+
+
+二、安裝私人雲所需的必要組件，請使用下面的命令。
+
+$ sudo apt -y install apache2 libapache2-mod-php7.2 openssl php-imagick php7.2-common php7.2-curl php7.2-gd php7.2-imap php7.2-intl php7.2-json php7.2-ldap php7.2-mbstring php7.2-mysql php7.2-pgsql php-smbclient php-ssh2 php7.2-sqlite3 php7.2-xml php7.2-zip
+
+
+安裝完成後可以使用dpkg命令來驗證是否安裝成功，請使用下面的命令。
+
+$ sudo dpkg -l apache2
+我們會看到apache2的版本是2.4.29.
+
+
+現在開啟apache2的服務，請使用以下命令。
+$ sudo systemctl start apache2
+$ sudo systemctl enable apache2
+
+先在你可以在你的瀏覽器中輸入你的虛擬機的IP地址，你會看到work it的標題，表示我們安裝apache2成功了。
+
+使用下面的命令查看PHP軟件的版本
+$ php -v
+
+
+三、現在我們安裝MariaDB，這是一個現在最流行的開源數據庫服務器，我們使用下面的命令安裝
+
+$ sudo apt install mariadb-server
+
+我們使用下面的命令為MariaDB加密
+
+$ sudo mysql_secure_installation
+當提示輸入根密碼時，請按enter鍵，然後按‘Y’鍵設置根密碼。
+
+設置完密碼後對於接下來的提示，我們直接輸入‘Y’ 并按enter鍵
+當完成設置後mariadb更安全了
+
+
+四、接下來我們使用下面的命令來創建私人云的數據庫
+提示大家'StrongP@ssword'必須由大小寫字母和數字和特殊符號組成，否則提示語法錯誤。
+'owncloud_user'可以使用你喜歡的用戶名
+'owncloud_db'可以使用你喜歡的數據庫名稱，
+$ sudo mysql -u root -p
+根據每一步的提示複製下面的命令並按enter鍵。
+
+MariaDB [(none)]> CREATE DATABASE owncloud_db;
+MariaDB [(none)]> GRANT ALL ON owncloud_db.* TO 'owncloud_user'@'localhost' IDENTIFIED BY 'StrongP@ssword';
+MariaDB [(none)]> FLUSH PRIVILEGES;
+MariaDB [(none)]> EXIT;
+
+
+
+五、創建數據庫後我們開始下載私人云，請使用下面的命令。
+
+$ sudo wget https://download.owncloud.org/community/owncloud-10.4.0.zip
+Once downloaded, unzip the zipped package to the /var/www/ directory.
+
+解析來解壓文件到/var/www/目錄裡，請使用下面的命令
+$ sudo unzip owncloud-10.4.0.zip -d /var/www/
+
+解壓完成後我們使用下面的命令設定權限
+$ sudo chown -R www-data:www-data /var/www/owncloud/
+$ sudo chmod -R 755 /var/www/owncloud/
+
+六、我們需要配置apache2，我們需要先創建一個私人云的空白配置文件，請使用下面的命令。
+
+$ sudo vim /etc/apache2/conf-available/owncloud.conf
+創建文件後進入編輯模式，並複制下面的內容到文件裡，保存並退出。
+
+Alias /owncloud "/var/www/owncloud/"
+
+<Directory /var/www/owncloud/>
+  Options +FollowSymlinks
+  AllowOverride All
+
+ <IfModule mod_dav.c>
+  GongXu123#
+ </IfModule>
+
+ SetEnv HOME /var/www/owncloud
+ SetEnv HTTP_HOME /var/www/owncloud
+
+</Directory>
+
+接下來我們需要運行下面的每一條命令來啟用所有必要的apache2的模塊和新添加的配置。
+
+$ sudo a2enconf owncloud
+$ sudo a2enmod rewrite
+$ sudo a2enmod headers
+$ sudo a2enmod env
+$ sudo a2enmod dir
+$ sudo a2enmod mime
+
+最後我們要重新讀取並啟動apache2的服務，請使用以下命令。
+$ systemctl reload apache2
+$ sudo systemctl restart apache2
+
+
+七、完成了上面所有配置後請在瀏覽器中輸入你的ubantu的ip地址後面加上/owncloud
+
+
+進入後我們看到登錄界面。
+用戶名和密碼設定為你自己需要的
+然後選擇數據庫類型，根據自己需要
+接下來根據提示，輸入之前提到過的owncloud_db和owncloud_user,密碼必須填寫我們設定的'StrongP@ssword'，不然會無法創建數據庫。
+最後點擊確認，幾秒鐘後配置完成，我們可以使用用戶名和密碼登錄了
+
+如果對大家有幫助請分享給朋友，謝謝。
+
+
+
+
