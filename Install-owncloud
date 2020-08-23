@@ -1,5 +1,7 @@
 網絡上有很多版本的如何安裝私人雲服務器owncloud-server 的文章，今天看來存在很多問題或者邏輯不清楚，我給大家整理了一份更準確的安裝步驟，接下來請看我的文章。
 
+There are many versions of articles on how to install private cloud server ownCloud-Server on the network. It seems that there are many problems or the logic is not clear today.
+I have sorted out a more accurate installation procedure for you, and please see my article .
 
 
 一、升級ubantu系統，使用以下命令
@@ -110,6 +112,8 @@ $ sudo systemctl restart apache2
 接下來根據提示，輸入之前提到過的owncloud_db和owncloud_user,密碼必須填寫我們設定的'StrongP@ssword'，不然會無法創建數據庫。
 最後點擊確認，幾秒鐘後配置完成，我們可以使用用戶名和密碼登錄了
 
+
+If it is helpful, please share it with your friends. Thank you！
 如果對大家有幫助請分享給朋友，謝謝。
 
 
